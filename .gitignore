@@ -1,0 +1,47 @@
+# Python
+__pycache__/
+*.py[cod]
+*.so
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# Virtual environments
+venv/
+.venv/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# macOS
+.DS_Store
+
+# Model weights & runs
+weights/
+runs/
+
+# Data (keep structure, ignore real images)
+data/train/
+data/val/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# ONNX
+*.onnx
+
+# TensorRT
+*.engine
+*.trt
+
+# Eval output
+eval_results.json
+
+# Screenshots
+*.png
+*.jpg
