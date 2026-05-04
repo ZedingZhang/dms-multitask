@@ -1,0 +1,61 @@
+# ============================================================
+#  DMS Multi-Task Model Configuration
+# ============================================================
+
+model:
+  backbone: "mobilenet_v3_small"    # 轻量级 Backbone
+                                    # 可选: mobilenet_v3_small / mobilenet_v3_large
+                                    #       timm (需 pip install timm)
+  timm_model_name: "mobilenetv4_conv_small"
+                                    # timm backbone 模型名 (仅 backbone=timm 时生效)
+                                    # 推荐: repvit_m1_1, mobilenetv4_conv_small,
+                                    #       fastvit_t8, efficientformerv2_s0
+  pretrained: true
+  fpn_channels: 64                  # FPN 输出通道数（轻量化）
+  num_classes: 4                    # 检测类别: background, face, phone, cigarette
+  num_landmarks: 14                 # 关键点数量: 左眼6 + 右眼6 + 嘴角2
+  num_anchors: 2                    # 每个位置锚框数
+  neck: "lite_fpn"                  # 颈部类型: lite_fpn / bifpn
+  bifpn_layers: 1                   # BiFPN 块堆叠数 (仅 neck=bifpn 时生效)
+
+anchors:
+  scales: [16, 32, 64, 128, 256, 512]
+  steps: [8, 16, 32]               # FPN 各层步长
+
+train:
+  epochs: 120
+  batch_size: 32
+  lr: 0.01
+  momentum: 0.9
+  weight_decay: 0.0005
+  lr_schedule: "cosine"
+  warmup_epochs: 5
+  img_size: 640
+  ema_decay: 0.9998               # EMA 衰减率, 0 表示禁用
+
+  # 多任务损失权重
+  loss_weights:
+    cls: 2.0                        # 分类损失
+    bbox: 1.0                       # 边框回归损失
+    landmark: 1.0                   # 关键点损失
+    uncertainty: false              # 启用不确定性加权 (Kendall et al. 2018)
+                                    # 开启后忽略 cls/bbox/landmark 固定权重
+
+data:
+  train_root: "data/train"
+  val_root: "data/val"
+  num_workers: 4
+
+distill:
+  enable: false
+  teacher_backbone: "mobilenet_v3_large"
+  temperature: 4.0
+  alpha_feat: 50.0                  # 特征蒸馏权重
+  alpha_logit: 1.0                  # Logit 蒸馏权重
+  alpha_response: 0.5               # 边框/关键点响应蒸馏权重
+
+export:
+  onnx_path: "weights/dms_model.onnx"
+  input_size: [1, 3, 640, 640]
+  opset_version: 12
+  simplify: true
