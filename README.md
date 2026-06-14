@@ -2,6 +2,25 @@
 
 轻量级驾驶员监控系统（Driver Monitoring System）多任务视觉感知模型，同时完成目标检测、面部关键点回归和疲劳行为分析。
 
+## 30-second verification
+
+快速确认训练/评估入口可导入、模型可构建：
+
+```bash
+git clone https://github.com/ZedingZhang/dms-multitask.git
+cd dms-multitask
+python -m pip install -r requirements.txt
+python -m py_compile train.py eval.py demo_infer.py export_onnx.py
+python - <<'PY'
+import yaml
+from models.dms_net import build_model
+
+cfg = yaml.safe_load(open("configs/default.yaml"))
+model = build_model(cfg)
+print(f"parameters={sum(p.numel() for p in model.parameters()):,}")
+PY
+```
+
 ## 功能
 
 - **目标检测** — 检测 3 类目标：人脸 (face)、手机 (phone)、香烟 (cigarette)
